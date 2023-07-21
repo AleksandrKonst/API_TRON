@@ -11,7 +11,7 @@ namespace API_TRON.Services
     {
         public static async Task<TransactionInfoModel> GetHistoryOperationsAsync(string address)
         {
-            var response = await new HttpClient().SendAsync(GetHistoryOperationServices.GetHttpConnectionClientAsync(address));
+            var response = await new HttpClient().SendAsync(GetHttpConnectionClientAsync(address));
             var messageResponse = response.Content.ReadAsStringAsync();
             var message = JObject.Parse(messageResponse.Result);
             if (message.ToObject<ErrorTransactionModel>().statusCode == 400)

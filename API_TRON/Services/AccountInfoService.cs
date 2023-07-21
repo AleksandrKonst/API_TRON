@@ -13,7 +13,7 @@ namespace API_TRON.Services
     {
         public static async Task<long> GetBalanceAsync(string address, string addressContract)
         {
-            var response = await new HttpClient().SendAsync(AccountInfoService.GetHttpConnectionClientAsync(address, addressContract));
+            var response = await new HttpClient().SendAsync(GetHttpConnectionClientAsync(address, addressContract));
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             var message = JObject.Parse(responseBody);
