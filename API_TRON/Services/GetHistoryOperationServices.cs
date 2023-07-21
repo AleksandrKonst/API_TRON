@@ -1,12 +1,27 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
+using API_TRON.Exception;
 using API_TRON.Model.Transaction;
+using Newtonsoft.Json.Linq;
 
 namespace API_TRON.Services
 {
     public static class GetHistoryOperationServices
     {
-        public static HttpRequestMessage GetHttpConnectionClientAsync(string address)
+        public static async Task<TransactionInfoModel> GetHistoryOperationsAsync(string address)
+        {
+            var response = await new HttpClient().SendAsync(GetHistoryOperationServices.GetHttpConnectionClientAsync(address));
+            var messageResponse = response.Content.ReadAsStringAsync();
+            var message = JObject.Parse(messageResponse.Result);
+            if (message.ToObject<ErrorTransactionModel>().statusCode == 400)
+            {
+                throw new TransactionException("Аккаунт не найден");
+            }
+            return message.ToObject<TransactionInfoModel>();
+        }
+
+        private static HttpRequestMessage GetHttpConnectionClientAsync(string address)
         {
             var request = new HttpRequestMessage
             {

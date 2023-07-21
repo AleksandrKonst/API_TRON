@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using API_TRON.Exception;
 using API_TRON.Model.Address;
-using API_TRON.Model.SmartContract;
 using API_TRON.Model.Transaction;
 using API_TRON.Services;
 using API_TRON.Services.Shared;
-using Newtonsoft.Json.Linq;
 
 namespace API_TRON
 {
@@ -24,7 +21,7 @@ namespace API_TRON
                         CreateAccount();
                         break;
                     case "GetBalance":
-                        await GetBalance();
+                        await GetBalanceAsync();
                         break;
                     case "GetHistoryOperations":
                         await GetHistoryOperationsAsync();
@@ -46,24 +43,13 @@ namespace API_TRON
             AddressService.WriteAccountInfo(addressModel);
         }
 
-        private static async Task GetBalance()
+        private static async Task GetBalanceAsync()
         {
             Console.WriteLine("Address. Example: TRQfYEkdqvWft5pb3PGzERX6Woh5v7syAV");
             var address = CheckService.CheckAddress(Console.ReadLine());
             Console.WriteLine("AddressContract. Example: TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf");
             var addressContract = CheckService.CheckAddress(Console.ReadLine());
-            
-            var response = await new HttpClient().SendAsync(AccountInfoService.GetHttpConnectionClientAsync(address, addressContract));
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            var message = JObject.Parse(responseBody);
-            if (message.ToObject<ErrorSmartContractModel>().result.result.ToString() != "True")
-            {
-                throw new ContractException("Контракт не найден");
-            }
-            var smartContractInfoModel = message.ToObject<SmartContractInfoModel>();
-            var result = long.Parse(smartContractInfoModel.constant_result[0],
-                System.Globalization.NumberStyles.HexNumber)/1000000;
+            var result = await AccountInfoService.GetBalanceAsync(address, addressContract);
             Console.WriteLine(result + " USDT");
         }
         
@@ -78,14 +64,7 @@ namespace API_TRON
             Console.WriteLine("DateEnd");
             var dateEnd = CheckService.CheckDataTime(Console.ReadLine());
 
-            var response = await new HttpClient().SendAsync(GetHistoryOperationServices.GetHttpConnectionClientAsync(address));
-            var messageResponse = response.Content.ReadAsStringAsync();
-            var message = JObject.Parse(messageResponse.Result);
-            if (message.ToObject<ErrorTransactionModel>().statusCode == 400)
-            {
-                throw new TransactionException("Аккаунт не найден");
-            }
-            transactionInfoModel = message.ToObject<TransactionInfoModel>();
+            transactionInfoModel = await GetHistoryOperationServices.GetHistoryOperationsAsync(address);
  
             Console.WriteLine("Transaction");
             foreach (var transaction in transactionInfoModel.data)
