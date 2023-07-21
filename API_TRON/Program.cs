@@ -6,6 +6,7 @@ using API_TRON.Model.Address;
 using API_TRON.Model.SmartContract;
 using API_TRON.Model.Transaction;
 using API_TRON.Services;
+using API_TRON.Services.Shared;
 using Newtonsoft.Json.Linq;
 
 namespace API_TRON
@@ -48,15 +49,18 @@ namespace API_TRON
         private static async Task GetBalance()
         {
             Console.WriteLine("Address. Example: TRQfYEkdqvWft5pb3PGzERX6Woh5v7syAV");
-            var address = GetHistoryOperationServices.CheckAddress(Console.ReadLine());
+            var address = CheckService.CheckAddress(Console.ReadLine());
             Console.WriteLine("AddressContract. Example: TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf");
-            var addressContract = Console.ReadLine();
+            var addressContract = CheckService.CheckAddress(Console.ReadLine());
             
             var response = await new HttpClient().SendAsync(AccountInfoService.GetHttpConnectionClientAsync(address, addressContract));
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             var message = JObject.Parse(responseBody);
-            Console.WriteLine(message);
+            if (message.ToObject<ErrorSmartContractModel>().result.result.ToString() != "True")
+            {
+                throw new ContractException("Контракт не найден");
+            }
             var smartContractInfoModel = message.ToObject<SmartContractInfoModel>();
             var result = long.Parse(smartContractInfoModel.constant_result[0],
                 System.Globalization.NumberStyles.HexNumber)/1000000;
@@ -68,11 +72,11 @@ namespace API_TRON
             TransactionInfoModel transactionInfoModel;
             
             Console.WriteLine("Address. Example: TNPns1Wa3NZYozYKTJvsEshk6FS4opWgnf");
-            var address = GetHistoryOperationServices.CheckAddress(Console.ReadLine());
+            var address = CheckService.CheckAddress(Console.ReadLine());
             Console.WriteLine("DateBegin");
-            var dateBegin = GetHistoryOperationServices.CheckDataTime(Console.ReadLine());
+            var dateBegin = CheckService.CheckDataTime(Console.ReadLine());
             Console.WriteLine("DateEnd");
-            var dateEnd = GetHistoryOperationServices.CheckDataTime(Console.ReadLine());
+            var dateEnd = CheckService.CheckDataTime(Console.ReadLine());
 
             var response = await new HttpClient().SendAsync(GetHistoryOperationServices.GetHttpConnectionClientAsync(address));
             var messageResponse = response.Content.ReadAsStringAsync();

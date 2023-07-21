@@ -89,10 +89,12 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Exception\AddressBadFormatException.cs" />
+        <Compile Include="Exception\ContractException.cs" />
         <Compile Include="Exception\DataTimeException.cs" />
         <Compile Include="Exception\KeyPairException.cs" />
         <Compile Include="Exception\TransactionException.cs" />
         <Compile Include="Model\Address\AddressModel.cs" />
+        <Compile Include="Model\SmartContract\ErrorSmartContractModel.cs" />
         <Compile Include="Model\SmartContract\SmartContractInfoModel.cs" />
         <Compile Include="Model\Transaction\ErrorTransactionModel.cs" />
         <Compile Include="Model\Transaction\TransactionInfoModel.cs" />
@@ -101,14 +103,13 @@
         <Compile Include="Services\AccountInfoService.cs" />
         <Compile Include="Services\AddressService.cs" />
         <Compile Include="Services\GetHistoryOperationServices.cs" />
+        <Compile Include="Services\Shared\CheckService.cs" />
+        <Compile Include="Services\Shared\CryptoService.cs" />
         <Compile Include="Services\TransactionService.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="App.config" />
       <None Include="packages.config" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Services\Interface\" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
