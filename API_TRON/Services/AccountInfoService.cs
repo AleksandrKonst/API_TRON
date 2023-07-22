@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using API_TRON.Exception;
 using API_TRON.Model.SmartContract;
 using API_TRON.Services.Shared;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimpleBase;
 
@@ -39,8 +40,14 @@ namespace API_TRON.Services
                 {
                     { "accept", "application/json" },
                 },
-                Content = new StringContent($"{{\n \"contract_address\": \"{contractAddress}\",\n \"parameter\": \"0000000000000000000000{addressHex}\",\n " +
-                                            $"\"function_selector\": \"balanceOf(address)\",\n \"owner_address\": \"{address}\",\n \"visible\": true\n }}")
+                Content = new StringContent(JsonConvert.SerializeObject(new SmartContractRequest()
+                {
+                    contract_address = contractAddress,
+                    parameter = $"0000000000000000000000{addressHex}",
+                    function_selector = "balanceOf(address)",
+                    owner_address = address,
+                    visible = true
+                }))
             };
             return request;
         }

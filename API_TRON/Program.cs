@@ -27,12 +27,25 @@ namespace API_TRON
                         await GetHistoryOperationsAsync();
                         break;
                     case "CreateTransaction":
-                        await GetHistoryOperationsAsync();
+                        await CreateTransactionAsync();
                         break;
                     default:
                         return;
                 }
             }
+        }
+
+        private static async Task CreateTransactionAsync()
+        {
+            Console.WriteLine("AddressFrom. Example: TRQfYEkdqvWft5pb3PGzERX6Woh5v7syAV");
+            var addressFrom = CheckService.CheckAddress(Console.ReadLine());
+            Console.WriteLine("AddressTo. Example: TRQH5kFn5eQAhCbtERR6YS7kSW6QthXEkM");
+            var addressTo = CheckService.CheckAddress(Console.ReadLine());
+            Console.WriteLine("Primary Key. Example: 15d254cf91c7253cb11a0d2963e3317cbf4e2a6a3d650d032b4550d5277113b7");
+            var priKey = CheckService.CheckPriKey(Console.ReadLine());
+            Console.WriteLine("AddressTo. Example: 100");
+            var amount = Convert.ToInt32(Console.ReadLine());
+            await TransactionService.CreateTransactionAsync(addressFrom, addressTo, priKey, amount);
         }
 
         private static void CreateAccount()
